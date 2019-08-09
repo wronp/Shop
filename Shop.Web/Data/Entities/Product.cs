@@ -30,6 +30,20 @@
 
         // This is a relation between products and users(this is a one to many relationship)
         public User User { get; set; }
+
+        public string ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.ImageUrl))
+                {
+                    return null;
+                }
+                // with the Substring we remove the ~ of the path
+                return $"https://shopcoreweb.azurewebsites.net{this.ImageUrl.Substring(1)}";
+            }
+
+        }
     }
 
 }
