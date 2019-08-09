@@ -1,11 +1,16 @@
-﻿namespace Shop.Web.Data
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
+namespace Shop.Web.Data
 {
-    using Microsoft.EntityFrameworkCore;
     using Entities;
 
-    public class DataContext : DbContext
+    // We change the DbContext for the IdentityDbContext because this had the security of CORE and makes the custom User's table
+    public class DataContext : IdentityDbContext<User> 
     {
         public DbSet<Product> Products { get; set; }
+        public DbSet<Country> Countries { get; set; }
+
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

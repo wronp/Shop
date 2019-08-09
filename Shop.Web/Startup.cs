@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Shop.Web
 {
     using Data;
+    using Data.Entities;
+    using Helper;
 
     public class Startup
     {
@@ -22,6 +25,18 @@ namespace Shop.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // We can configuarte the password options here
+            services.AddIdentity<User, IdentityRole>(cfg =>
+            {
+                cfg.User.RequireUniqueEmail = true;
+                cfg.Password.RequireDigit = false;
+                cfg.Password.RequiredUniqueChars = 0;
+                cfg.Password.RequireLowercase = false;
+                cfg.Password.RequireNonAlphanumeric = false;
+                cfg.Password.RequireUppercase = false;
+                cfg.Password.RequiredLength = 3;
+            })
+        .AddEntityFrameworkStores<DataContext>();
 
             // here we add the DataBase created in appsettings.json(Injection!)
             services.AddDbContext<DataContext>(cfg =>
@@ -29,8 +44,11 @@ namespace Shop.Web
                 cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            // We need to implement all the interfaces created by us.
             services.AddTransient<SeedDb>(); // This is the injection of the DataBase(the AddTransient go to the garbage)
-            services.AddScoped<IRepository, Repository>(); // this is the injection of the repository(the AddScoped is always availableS)
+            services.AddScoped<IProductRepository, ProductRepository>(); // this is the injection of the repository(the AddScoped is always availableS)
+            services.AddScoped<ICountryRepositoy, CountryRepository>();
+            services.AddScoped<IUserHelper, UserHelper>(); // This help us with the creation of the users.
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -57,6 +75,7 @@ namespace Shop.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseCookiePolicy();
 
             app.UseMvc(routes =>
