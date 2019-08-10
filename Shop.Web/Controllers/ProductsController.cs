@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Shop.Web.Controllers
     using Models;
     using System;
 
+    [Authorize] /// this makes the user to do the login first but after that the request send it to that direction.
     public class ProductsController : Controller
     {
         private readonly IProductRepository productRepository;
